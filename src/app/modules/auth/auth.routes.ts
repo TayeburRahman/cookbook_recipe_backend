@@ -11,8 +11,8 @@ const router = express.Router();
 router.post("/register", AuthController.registrationAccount)
 router.post("/login", AuthController.loginAccount)
 router.post("/activate-user", AuthController.activateAccount)
-router.post("/resend", AuthController.resendActivationCode)
 router.post("/active-resend", AuthController.resendCodeActivationAccount)
+router.post("/resend", AuthController.resendActivationCode)
 router.post("/forgot-password", AuthController.forgotPass)
 router.post("/forgot-resend", AuthController.resendCodeForgotAccount)
 router.post("/verify-otp", AuthController.checkIsValidForgetActivationCode)
@@ -20,13 +20,17 @@ router.post("/reset-password", AuthController.resetPassword)
 router.patch("/change-password",
   auth(
     ENUM_USER_ROLE.USER,
-    // ENUM_USER_ROLE.PARTNER,
+    ENUM_USER_ROLE.ADMIN,
     ENUM_USER_ROLE.SUPER_ADMIN
-  ), AuthController.changePassword
-);
+  ), 
+  AuthController.changePassword
+)
+router.delete("/delete-account", AuthController.deleteMyAccount)
+router.patch("/block", AuthController.blockUnblockAuthUser)
 
 //------ User Router ---------------
 router.get("/profile", auth(ENUM_USER_ROLE.USER), UserController.getProfile)
+ 
 
 //------ Admin Router ---------------
 router.get(
@@ -41,7 +45,7 @@ router.patch(
   AdminController.updateProfile
 );
 router.delete(
-  "/delete_account",
+  "/delete-account",
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.SUPER_ADMIN),
   AdminController.deleteMyAccount
 );

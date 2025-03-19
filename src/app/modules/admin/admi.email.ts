@@ -1,3 +1,5 @@
+import config from "../../../config";
+
 export const registrationSuccess = (userData: any) => `
   <html>
     <head>
@@ -50,9 +52,9 @@ export const registrationSuccess = (userData: any) => `
     </head>
     <body>
       <div class="container">
-        <h1>Welcome to Tourist Platform App</h1>
+        <h1>Welcome to ${config.app_name} App</h1>
         <p>Hello ${userData?.user?.name},</p>
-        <p>Thank you for registering with Tourist Platform App.</p>
+        <p>Thank you for registering with ${config.app_name} App.</p>
         <p>If you have any questions, please contact us at <a href="mailto:bdCalling@gmail.com">bdCalling@gmail.com</a>.</p>
       </div>
     </body>

@@ -6,7 +6,7 @@ import ApiError from "../../../errors/ApiError";
 import { jwtHelpers } from "../../../helpers/jwtHelpers";
 import { logger } from "../../../shared/logger";
 import Auth from "./auth.model";
- 
+
 import sendEmail from "../../../utils/sendEmail";
 import { ENUM_USER_ROLE } from "../../../enums/user";
 import { sendResetEmail } from "./sendResetMails";
@@ -17,6 +17,7 @@ import { ActivationPayload, ChangePasswordPayload, ForgotPasswordPayload, IAuth,
 import config from "../../../config";
 import User from "../user/user.model";
 import Admin from "../admin/admin.model";
+import { Types } from "mongoose";
 
 const registrationAccount = async (payload: IAuth) => {
   const { role, password, confirmPassword, email, ...other } = payload;
@@ -40,6 +41,7 @@ const registrationAccount = async (payload: IAuth) => {
     await Promise.all([
       existingAuth.role === "USER" && User.deleteOne({ authId: existingAuth._id }),
       existingAuth.role === "ADMIN" && Admin.deleteOne({ authId: existingAuth._id }),
+      existingAuth.role === "RECIPE_CREATOR" && Admin.deleteOne({ authId: existingAuth._id }),
       Auth.deleteOne({ email }),
     ]);
   }
@@ -54,8 +56,8 @@ const registrationAccount = async (payload: IAuth) => {
     expirationTime: Date.now() + 3 * 60 * 1000,
   };
 
-  if (role === "USER" || role === "PARTNER") {
-    console.log("==============", auth);
+  if (role === "USER") {
+    console.log("==============",  auth.email, email);
     sendEmail({
       email: auth.email,
       subject: "Activate Your Account",
@@ -87,7 +89,10 @@ const registrationAccount = async (payload: IAuth) => {
       break;
     case ENUM_USER_ROLE.ADMIN:
       result = await Admin.create(other);
-      break; 
+      break;
+    case ENUM_USER_ROLE.RECIPE_CREATOR:
+      result = await Admin.create(other);
+      break;
     default:
       throw new ApiError(400, "Invalid role provided!");
   }
@@ -96,7 +101,7 @@ const registrationAccount = async (payload: IAuth) => {
 };
 
 const activateAccount = async (payload: ActivationPayload) => {
-  const { activation_code, userEmail } = payload;
+  const { activation_code, userEmail } = payload; 
 
   const existAuth = await Auth.findOne({ email: userEmail });
   if (!existAuth) {
@@ -179,7 +184,7 @@ const loginAccount = async (payload: LoginPayload) => {
     case ENUM_USER_ROLE.USER:
       userDetails = await User.findOne({ authId: isAuth._id }).populate("authId");
       role = ENUM_USER_ROLE.USER;
-      break; 
+      break;
     case ENUM_USER_ROLE.ADMIN:
       userDetails = await Admin.findOne({ authId: isAuth._id }).populate("authId");
       role = ENUM_USER_ROLE.ADMIN;
@@ -333,7 +338,7 @@ const resendCodeActivationAccount = async (payload: { email: string }) => {
   const user = await Auth.findOne({ email }) as IAuth;
 
   if (!user.email) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Email not found!");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Email not found!");;
   }
 
   const activationCode = createActivationToken().activationCode;
@@ -507,6 +512,65 @@ cron.schedule("* * * * *", async () => {
   }
 });
 
+const deleteMyAccount = async (payload: { authId: Types.ObjectId }) => {
+  const { authId } = payload;
+
+  const isUserExist = await Auth.findById(authId);
+
+  if (!isUserExist) {
+    throw new ApiError(404, "User does not exist");
+  }
+
+  let deletedUser = null;
+
+  if (isUserExist.role === ENUM_USER_ROLE.USER) {
+    deletedUser = await User.findOneAndDelete({ authId: isUserExist._id });
+  } else if (
+    isUserExist.role === ENUM_USER_ROLE.ADMIN ||
+    isUserExist.role === ENUM_USER_ROLE.SUPER_ADMIN  
+  ) {
+    deletedUser = await Admin.findOneAndDelete({ authId: isUserExist._id });
+  }
+
+  if (!deletedUser) {
+    throw new ApiError(404, "User details not found in Client or Member collection");
+  }
+
+  const deletedAuth = await Auth.findByIdAndDelete(authId);
+
+  return {
+    message: "Account deleted successfully",
+    deletedAuth,
+  };
+};
+ 
+const blockUnblockAuthUser = async (payload: {
+  role: string, email: string, is_block: boolean
+}) => {
+  const { role, email, is_block } = payload; 
+  console.log("USER", role, email, is_block)
+  try {
+    const updatedAuth = await Auth.findOneAndUpdate(
+      { email: email, role: role },
+      { $set: { is_block } },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("role name email is_block");
+
+    if (!updatedAuth) {
+      throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+    return updatedAuth;
+
+  } catch (error: any) {
+    throw new ApiError(httpStatus.NOT_FOUND, "An unexpected error" + " " + error.message);
+  }
+};
+
+
 export const AuthService = {
   registrationAccount,
   loginAccount,
@@ -517,5 +581,7 @@ export const AuthService = {
   checkIsValidForgetActivationCode,
   resendCodeActivationAccount,
   resendCodeForgotAccount,
+  deleteMyAccount,
+  blockUnblockAuthUser
 };
 

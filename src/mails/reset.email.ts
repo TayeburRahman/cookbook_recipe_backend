@@ -1,4 +1,6 @@
-interface ResetEmailTemplateData {
+ import config from "../config";
+
+ interface ResetEmailTemplateData {
     name: string;
     verifyCode: string;
     verifyExpire: number;
@@ -92,7 +94,7 @@ interface ResetEmailTemplateData {
             <p>Thank you,<br>The Support Team</p>
           </div>
           <div class="footer">
-            <p>&copy; ${new Date().getFullYear()} Tourist Platform App. All rights reserved.</p>
+            <p>&copy; ${new Date().getFullYear()} ${config.app_name} App. All rights reserved.</p>
             <p><a href="https://yourwebsite.com/privacy">Privacy Policy</a> | <a href="https://yourwebsite.com/contact">Contact Support</a></p>
           </div>
         </div>

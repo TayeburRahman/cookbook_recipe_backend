@@ -128,6 +128,27 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const deleteMyAccount = catchAsync(async (req: Request, res: Response) => {
+  await AuthService.deleteMyAccount(req.query as any);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Account delete successfully.",
+  });
+});
+
+const blockUnblockAuthUser = catchAsync(async (req, res) => {
+  const body = req.body as any;
+  const result = await AuthService.blockUnblockAuthUser(body);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: `${body.is_block ? "Blocked" : "Unblocked"} successfully`,
+    data: result,
+  });
+});
+
 export const AuthController = {
   registrationAccount,
   activateAccount,
@@ -139,5 +160,7 @@ export const AuthController = {
   checkIsValidForgetActivationCode,
   resendCodeActivationAccount,
   resendCodeForgotAccount,
+  deleteMyAccount,
+  blockUnblockAuthUser
 };
  

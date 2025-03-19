@@ -40,7 +40,7 @@ export type IAuth = Document & {
   name: string;
   email: string;
   password: string;
-  role: 'USER' | 'PARTNER' | 'ADMIN' | 'SUPER_ADMIN';
+  role: 'USER' | 'RECIPE_CREATOR' | 'ADMIN' | 'SUPER_ADMIN';
   verifyCode?: string;
   codeVerify?: boolean;
   activationCode?: string;

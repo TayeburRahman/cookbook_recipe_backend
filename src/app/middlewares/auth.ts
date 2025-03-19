@@ -5,6 +5,8 @@ import ApiError from '../../errors/ApiError';
 import httpStatus from 'http-status';
 import { jwtHelpers } from '../../helpers/jwtHelpers';
 import User from '../modules/auth/auth.model';
+import Auth from '../modules/auth/auth.model';
+import { ENUM_USER_ROLE } from '../../enums/user';
 
 const auth =
   (...roles: string[]) =>
@@ -19,27 +21,29 @@ const auth =
         );
       }
 
-      if (tokenWithBearer && tokenWithBearer.startsWith('Bearer')) {
-        const token = tokenWithBearer.split(' ')[1];
+      if (tokenWithBearer.startsWith("Bearer")) {
+        const token = tokenWithBearer.split(" ")[1]; 
+       // Verify token 
+        const verifyUser = jwtHelpers.verifyToken(token, config.jwt.secret as Secret); 
+        // Set user to headers
+        req.user = verifyUser; 
+        const isExist = await Auth.findById(verifyUser?.authId);
 
-        const verifyUser = jwtHelpers.verifyToken(
-          token,
-          config.jwt.secret as Secret,
-        );
-
-        req.user = verifyUser;
-        const isExist = await User.findById(verifyUser?.userId);
-
-        if (!isExist) {
-          throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not authorized');
+        if (
+          verifyUser.role ===
+            Object.values(ENUM_USER_ROLE).includes(verifyUser.role) &&
+          !isExist
+        ) {
+          throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized");
         }
 
         if (roles.length && !roles.includes(verifyUser.role)) {
           throw new ApiError(
             httpStatus.FORBIDDEN,
-            'Access Forbidden: You do not have permission to perform this action',
+            "Access Forbidden: You do not have permission to perform this action"
           );
         }
+        
         next();
       }
     } catch (error) {

@@ -17,7 +17,7 @@ const moduleRoutes = [
     route: MessageRoutes,
   },
   // -- progressing
-  {
+  { 
     path: '/notification',
     route: NotificationRoutes,
   },

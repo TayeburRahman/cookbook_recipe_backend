@@ -69,7 +69,7 @@ const sendMessage = async (req: Request) => {
     });
   }
 
-  let message_img  = ''
+  let message_img = ''
   if (files?.message_img) {
      message_img = `/images/message/${files.message_img[0].filename}`;
   }
@@ -90,7 +90,7 @@ const sendMessage = async (req: Request) => {
   if (socketIO && conversation && newMessage) {
     socketIO.emit(`message::${conversation._id.toString()}`, newMessage);
   }
-
+  
   return newMessage;
 };
 

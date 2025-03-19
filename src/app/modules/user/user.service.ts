@@ -6,7 +6,7 @@ import Auth from "../auth/auth.model";
 import { IUser } from "./user.interface";
 import User from "./user.model";
 
-const updateProfile = async (req: RequestData): Promise<IUser> => {
+const updateMyProfile = async (req: RequestData): Promise<IUser> => {
   const { files, body: data } = req;
   const { userId, authId } = req.user;
 
@@ -70,7 +70,7 @@ const getProfile = async (user: { userId: string }): Promise<IUser> => {
   return result;
 };
 
-const deleteMyAccount = async (payload: { email: string; password: string; }): Promise<void> => {
+const deleteUSerAccount = async (payload: { email: string; password: string; }): Promise<void> => {
   const { email, password } = payload;
 
   const isUserExist = await Auth.isAuthExist(email);
@@ -91,7 +91,7 @@ const deleteMyAccount = async (payload: { email: string; password: string; }): P
 
 export const UserService = {
   getProfile,
-  deleteMyAccount,
-  updateProfile,
+  deleteUSerAccount,
+  updateMyProfile,
 };
  
