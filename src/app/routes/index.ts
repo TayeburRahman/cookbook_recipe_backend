@@ -2,6 +2,7 @@ import express from 'express';
 import { AuthRoutes } from '../modules/auth/auth.routes'; 
 import { MessageRoutes } from '../modules/messages/message.routes';
 import { NotificationRoutes } from '../modules/notifications/notifications.routes'; 
+import { DashboardRoutes } from '../modules/dashboard/dashboard.routes';
 
 const router = express.Router();
 
@@ -16,6 +17,10 @@ const moduleRoutes = [
     path: '/message',
     route: MessageRoutes,
   },
+  {
+    path: '/dashboard',
+    route: DashboardRoutes,
+  }, 
   // -- progressing
   { 
     path: '/notification',

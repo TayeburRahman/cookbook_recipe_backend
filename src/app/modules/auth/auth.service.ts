@@ -54,10 +54,10 @@ const registrationAccount = async (payload: IAuth) => {
     activationCode,
     password,
     expirationTime: Date.now() + 3 * 60 * 1000,
+    isActive: false
   };
 
-  if (role === "USER") {
-    console.log("==============",  auth.email, email);
+  if (role === "USER") { 
     sendEmail({
       email: auth.email,
       subject: "Activate Your Account",
@@ -69,9 +69,13 @@ const registrationAccount = async (payload: IAuth) => {
   }
 
   let createAuth;
-  if (role !== ENUM_USER_ROLE.SUPER_ADMIN) {
+  if (role === ENUM_USER_ROLE.ADMIN || role === ENUM_USER_ROLE.SUPER_ADMIN) {
+    auth.isActive = true
+    createAuth = await Auth.create(auth);
+  } else {
     createAuth = await Auth.create(auth);
   }
+
   if (!createAuth) {
     throw new ApiError(500, "Failed to create auth account");
   }
