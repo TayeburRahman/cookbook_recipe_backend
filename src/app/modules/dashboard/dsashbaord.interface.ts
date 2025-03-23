@@ -15,14 +15,18 @@ export interface INutritional {
   carbs: number;
   fat: number;
   fiber: number;
+  sugars: number;
+  saturated_fat: number;
+  sodium: number;
 }
 
 export interface IRecipe extends Document {
   name: string;
+  creator: Types.ObjectId;
   duration: string;
   ingredients: string[];
   instructions: string;
-  nutritional: INutritional[];
+  nutritional: INutritional;
   category: string;
   image: string;
   meal_type: string;

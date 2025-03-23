@@ -58,14 +58,18 @@ const ReviewSchema = new Schema<IReview>({
     },
 });
 
-
 const nutritionalSchema = new Schema<INutritional>({
     calories: { type: Number, required: true },
     protein: { type: Number, required: true },
     carbs: { type: Number, required: true },
     fat: { type: Number, required: true },
 })
+
 const RecipeSchema = new Schema<IRecipe>({
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: "Auth"
+    },
     name: {
         type: String,
         required: true
@@ -83,7 +87,7 @@ const RecipeSchema = new Schema<IRecipe>({
         required: true
     },
     nutritional: {
-        type: [nutritionalSchema],
+        type: nutritionalSchema,
         required: true
     },
     category: {
