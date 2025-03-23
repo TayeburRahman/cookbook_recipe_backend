@@ -17,7 +17,6 @@ export type IUser = Document & {
   status: "active" | "deactivate";
   createdAt?: Date;
   updatedAt?: Date;
-
   mail_types: string;
   relevant_dielary: string;
   age: string;
