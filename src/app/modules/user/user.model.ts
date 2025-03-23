@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
 import { IUser } from "./user.interface";
 
- 
+
 
 const UserSchema = new Schema<IUser>(
   {
@@ -38,17 +38,26 @@ const UserSchema = new Schema<IUser>(
       type: String,
       default: null,
     },
-    city: {
+    mail_types: {
       type: String,
       default: null,
     },
-    state: {
+    relevant_dielary: {
       type: String,
       default: null,
     },
-    country: {
+    age: {
       type: String,
       default: null,
+    },
+    weight: {
+      type: String,
+    },
+    hight: {
+      type: String,
+    },
+    activety_lavel: {
+      type: String,
     },
     date_of_birth: {
       type: Date,

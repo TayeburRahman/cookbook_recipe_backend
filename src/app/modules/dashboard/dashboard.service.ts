@@ -92,7 +92,7 @@ const createRecipes = async (payload: IRecipe, user: IReqUser) => {
     try {
         const authId = user.authId as any;
         if (!authId) {
-
+            throw new ApiError(404, 'User login unauthorized!');
         }
         payload.creator = authId;
         const recipe = new Recipe(payload);

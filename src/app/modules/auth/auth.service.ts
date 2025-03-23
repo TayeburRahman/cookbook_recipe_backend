@@ -57,7 +57,7 @@ const registrationAccount = async (payload: IAuth) => {
     isActive: false
   };
 
-  if (role === "USER") { 
+  if (role === "USER") {
     sendEmail({
       email: auth.email,
       subject: "Activate Your Account",
@@ -105,7 +105,7 @@ const registrationAccount = async (payload: IAuth) => {
 };
 
 const activateAccount = async (payload: ActivationPayload) => {
-  const { activation_code, userEmail } = payload; 
+  const { activation_code, userEmail } = payload;
 
   const existAuth = await Auth.findOne({ email: userEmail });
   if (!existAuth) {
@@ -531,7 +531,7 @@ const deleteMyAccount = async (payload: { authId: Types.ObjectId }) => {
     deletedUser = await User.findOneAndDelete({ authId: isUserExist._id });
   } else if (
     isUserExist.role === ENUM_USER_ROLE.ADMIN ||
-    isUserExist.role === ENUM_USER_ROLE.SUPER_ADMIN  
+    isUserExist.role === ENUM_USER_ROLE.SUPER_ADMIN
   ) {
     deletedUser = await Admin.findOneAndDelete({ authId: isUserExist._id });
   }
@@ -547,11 +547,11 @@ const deleteMyAccount = async (payload: { authId: Types.ObjectId }) => {
     deletedAuth,
   };
 };
- 
+
 const blockUnblockAuthUser = async (payload: {
   role: string, email: string, is_block: boolean
 }) => {
-  const { role, email, is_block } = payload; 
+  const { role, email, is_block } = payload;
   console.log("USER", role, email, is_block)
   try {
     const updatedAuth = await Auth.findOneAndUpdate(
