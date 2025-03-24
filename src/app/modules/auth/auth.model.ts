@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import config from '../../../config';
 import validator from 'validator';
 import { IAuth, IAuthModel } from './auth.interface';
- 
+
 
 const AuthSchema: Schema<IAuth> = new Schema(
   {
@@ -29,6 +29,9 @@ const AuthSchema: Schema<IAuth> = new Schema(
       type: String,
       enum: ["USER", "RECIPE_CREATOR", "ADMIN", "SUPER_ADMIN"],
       required: true,
+    },
+    profile_image: {
+      type: String,
     },
     verifyCode: {
       type: String,
@@ -86,7 +89,7 @@ AuthSchema.statics.isPasswordMatched = async function (
 
 // Hash the password
 AuthSchema.pre<IAuth>('save', async function (next) {
-  
+
   if (!this.isModified('password')) {
     return next();
   }

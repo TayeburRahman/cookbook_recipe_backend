@@ -1,5 +1,5 @@
- 
-import { Request, RequestHandler, Response } from 'express';  
+
+import { Request, RequestHandler, Response } from 'express';
 import catchAsync from '../../../shared/catchasync';
 import { AuthService } from './auth.service';
 import sendResponse from '../../../shared/sendResponse';
@@ -7,7 +7,7 @@ import config from '../../../config';
 import { IReqUser } from './auth.interface';
 
 const registrationAccount = catchAsync(async (req: Request, res: Response) => {
-  const { role } = await AuthService.registrationAccount(req.body);
+  const { role } = await AuthService.registrationAccount(req.body, req.files);
   const message =
     role === "USER"
       ? "Please check your email for the activation OTP code."
@@ -163,4 +163,3 @@ export const AuthController = {
   deleteMyAccount,
   blockUnblockAuthUser
 };
- 

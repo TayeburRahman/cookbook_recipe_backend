@@ -19,7 +19,7 @@ import User from "../user/user.model";
 import Admin from "../admin/admin.model";
 import { Types } from "mongoose";
 
-const registrationAccount = async (payload: IAuth) => {
+const registrationAccount = async (payload: IAuth, files: any) => {
   const { role, password, confirmPassword, email, ...other } = payload;
 
   if (!role || !Object.values(ENUM_USER_ROLE).includes(role as any)) {
@@ -46,6 +46,11 @@ const registrationAccount = async (payload: IAuth) => {
     ]);
   }
 
+  let profile_image: string | undefined = undefined;
+  if (files && files.profile_image) {
+    profile_image = `/images/profile/${files.profile_image[0].filename}`;
+  }
+
   const { activationCode } = createActivationToken();
   const auth = {
     role,
@@ -53,6 +58,7 @@ const registrationAccount = async (payload: IAuth) => {
     email,
     activationCode,
     password,
+    profile_image,
     expirationTime: Date.now() + 3 * 60 * 1000,
     isActive: false
   };
@@ -82,6 +88,7 @@ const registrationAccount = async (payload: IAuth) => {
 
   other.authId = createAuth._id;
   other.email = email;
+  other.profile_image = profile_image;
 
   console.log("Account", auth)
 

@@ -1,4 +1,4 @@
-import ApiError from "../../../errors/ApiError"; 
+import ApiError from "../../../errors/ApiError";
 import httpStatus from "http-status";
 import { Request } from "express";
 import { RequestData } from "../../../interfaces/common";
@@ -94,4 +94,4 @@ export const UserService = {
   deleteUSerAccount,
   updateMyProfile,
 };
- 
+
